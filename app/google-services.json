@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "410724568730",
+    "firebase_url": "https://waldowalpaper.firebaseio.com",
+    "project_id": "waldowalpaper",
+    "storage_bucket": "waldowalpaper.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:410724568730:android:051e405823cb53ff7dd923",
+        "android_client_info": {
+          "package_name": "com.avijitsamanta.waldo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "410724568730-ne4tha08bbaa3pfgggolqnkei3ibfkii.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA7JE7njykt46_Y_PbnAQv_073kpO8Pe2I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "410724568730-ne4tha08bbaa3pfgggolqnkei3ibfkii.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

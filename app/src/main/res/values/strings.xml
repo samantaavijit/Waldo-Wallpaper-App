@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Waldo</string>
+    <string name="logout">Logout</string>
+    <string name="imageview">ImageView</string>
+    <string name="color_palette">Color Palette</string>
+
+</resources>
