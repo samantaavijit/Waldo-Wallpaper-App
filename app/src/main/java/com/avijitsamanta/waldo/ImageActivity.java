@@ -51,9 +51,11 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 
 
@@ -61,7 +63,8 @@ import static com.avijitsamanta.waldo.WallpaperActivity.PARCELABLE_WALLPAPER;
 
 public class ImageActivity extends AppCompatActivity {
     private Wallpaper w;
-    private ImageView mainImage;
+    private ImageView mainImage, imageViewSetWallpaperDefault, imageViewDownloadDefault,
+            imageViewSetWallpaper, imageViewDownload, shareDefault, share;
     private CheckBox checkBox;
     private ProgressBar progressBar;
     private RelativeLayout relativeLayoutDefault;
@@ -100,10 +103,10 @@ public class ImageActivity extends AppCompatActivity {
         checkBox = findViewById(R.id.fav_wallpaper_image_activity);
         progressBar = findViewById(R.id.progress_bar_image_activity);
         relativeLayoutDefault = findViewById(R.id.open_bottom_sheet);
-        ImageView imageViewSetWallpaperDefault = findViewById(R.id.set_wallpaper_default);
-        ImageView imageViewDownloadDefault = findViewById(R.id.download_wallpaper_default);
-        ImageView imageViewSetWallpaper = findViewById(R.id.set_wallpaper);
-        ImageView imageViewDownload = findViewById(R.id.download_wallpaper);
+        imageViewSetWallpaperDefault = findViewById(R.id.set_wallpaper_default);
+        imageViewDownloadDefault = findViewById(R.id.download_wallpaper_default);
+        imageViewSetWallpaper = findViewById(R.id.set_wallpaper);
+        imageViewDownload = findViewById(R.id.download_wallpaper);
         tv_img_name = findViewById(R.id.name);
         TextView textViewSizeDefault = findViewById(R.id.size_wallpaper_default);
         TextView tvResolution = findViewById(R.id.tv_resolution);
@@ -111,9 +114,8 @@ public class ImageActivity extends AppCompatActivity {
         TextView tvType = findViewById(R.id.tv_type);
         final TextView tvName = findViewById(R.id.tv_name);
         TextView title = findViewById(R.id.tv_title);
-        ImageView shareDefault = findViewById(R.id.share_wallpaper_default);
-        ImageView share = findViewById(R.id.share_wallpaper);
-
+        shareDefault = findViewById(R.id.share_wallpaper_default);
+        share = findViewById(R.id.share_wallpaper);
 
         LinearLayout linearLayoutBottomSheet = findViewById(R.id.bottom_sheet_);
 
@@ -125,6 +127,12 @@ public class ImageActivity extends AppCompatActivity {
             }
         });
 
+        imageViewSetWallpaperDefault.setVisibility(View.GONE);
+        imageViewDownload.setVisibility(View.GONE);
+        imageViewSetWallpaper.setVisibility(View.GONE);
+        imageViewDownloadDefault.setVisibility(View.GONE);
+        share.setVisibility(View.GONE);
+        shareDefault.setVisibility(View.GONE);
         Intent getIn = getIntent();
         if (getIn != null) {
             w = getIn.getParcelableExtra(PARCELABLE_WALLPAPER);
@@ -138,6 +146,12 @@ public class ImageActivity extends AppCompatActivity {
                             public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
                                 super.onResourceReady(resource, transition);
                                 progressBar.setVisibility(View.GONE);
+                                imageViewSetWallpaperDefault.setVisibility(View.VISIBLE);
+                                imageViewDownload.setVisibility(View.VISIBLE);
+                                imageViewSetWallpaper.setVisibility(View.VISIBLE);
+                                imageViewDownloadDefault.setVisibility(View.VISIBLE);
+                                share.setVisibility(View.VISIBLE);
+                                shareDefault.setVisibility(View.VISIBLE);
 
                                 Palette.from(resource).generate(new Palette.PaletteAsyncListener() {
                                     @Override
@@ -374,7 +388,7 @@ public class ImageActivity extends AppCompatActivity {
                     Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_CODE);
 
         } else
-            new DownloadImage().execute(w.getUrl());
+            saveImage(waterMarkEffect(downloadImage()));
 
     }
 
@@ -385,43 +399,58 @@ public class ImageActivity extends AppCompatActivity {
     private void saveImage(Bitmap bitmap) {
         if (bitmap == null)
             return;
-        createDirectory();
 
         try {
+            File filePath = Environment.getExternalStorageDirectory();
+            File dir = new File(filePath.getAbsolutePath() + "/WALDO/");
+            dir.mkdir();
             String name = tv_img_name.getText().toString();
-            File fileName = new File(Environment.getExternalStorageDirectory() + "/WALDO/" + name + ".JPEG");
-            FileOutputStream out = new FileOutputStream(fileName);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
-
-            out.flush();
-            out.close();
-
-            ContentValues image = new ContentValues();
-            image.put("title", w.getTitle());
-            image.put("_display_name", name);
-            image.put("description", "App Image");
-            image.put("date_added", System.currentTimeMillis());
-            image.put("type", "App Image");
-            image.put("description", "image/jpeg");
-            image.put("orientation", 0);
-
-            File parent = fileName.getParentFile();
-            if (parent == null)
-                return;
-            image.put("bucket_id", parent.toString().toLowerCase().hashCode());
-            image.put("bucket_display_name", parent.getName().toLowerCase());
-            image.put("_size", fileName.length());
-            image.put("_data", fileName.getAbsolutePath());
-            Uri result = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, image);
-            Toast.makeText(this, "Storage location " + fileName, Toast.LENGTH_SHORT).show();
-        } catch (Exception e) {
-            //StyleableToast.makeText(getApplicationContext(),e.toString(),R.style.example_toast).show();
-            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            File file = new File(dir, name + ".jpg");
+            OutputStream outputStream = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+            outputStream.flush();
+            outputStream.close();
+            Toast.makeText(this, file.toString(), Toast.LENGTH_SHORT).show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Error " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
+
+//
+//        try {
+//            File fileName = new File(Environment.getExternalStorageDirectory() + "/WALDO/" + name + ".JPEG");
+//            FileOutputStream out = new FileOutputStream(fileName);
+//            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+//
+//            out.flush();
+//            out.close();
+//
+//            ContentValues image = new ContentValues();
+//            image.put("title", w.getTitle());
+//            image.put("_display_name", name);
+//            image.put("description", "App Image");
+//            image.put("date_added", System.currentTimeMillis());
+//            image.put("type", "App Image");
+//            image.put("description", "image/jpeg");
+//            image.put("orientation", 0);
+//
+//            File parent = fileName.getParentFile();
+//            if (parent == null)
+//                return;
+//            image.put("bucket_id", parent.toString().toLowerCase().hashCode());
+//            image.put("bucket_display_name", parent.getName().toLowerCase());
+//            image.put("_size", fileName.length());
+//            image.put("_data", fileName.getAbsolutePath());
+//            Uri result = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, image);
+//            Toast.makeText(this, "Storage location " + fileName, Toast.LENGTH_SHORT).show();
+//        } catch (Exception e) {
+//            //StyleableToast.makeText(getApplicationContext(),e.toString(),R.style.example_toast).show();
+//            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+//        }
     }
 
     /**
-     * it open the system wallpaper intent
+     * It open the system wallpaper intent
      */
     private void setWallpaper() {
         try {
@@ -488,7 +517,6 @@ public class ImageActivity extends AppCompatActivity {
         return uri;
     }
 
-
     /**
      * It is Water mark effect of an image
      *
@@ -521,15 +549,6 @@ public class ImageActivity extends AppCompatActivity {
         return result;
     }
 
-    private void createDirectory() {
-        try {
-            File sdcard = new File(Environment.getExternalStorageDirectory() + "/WALDO");
-            if (!sdcard.exists()) sdcard.mkdirs();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == REQUEST_CODE) {
@@ -544,7 +563,7 @@ public class ImageActivity extends AppCompatActivity {
                 // permission Granted
 
                 Toast.makeText(this, "Permission granted....", Toast.LENGTH_SHORT).show();
-                new DownloadImage().execute(w.getUrl());
+                saveImage(waterMarkEffect(downloadImage()));
             } else {
                 Toast.makeText(this, "Permission Denied...", Toast.LENGTH_SHORT).show();
             }
@@ -554,29 +573,28 @@ public class ImageActivity extends AppCompatActivity {
     /**
      * download the original image
      */
-    private class DownloadImage extends AsyncTask<String, Void, Bitmap> {
-
-        @Override
-        protected Bitmap doInBackground(String... url) {
-            String urlDisplay = url[0];
-            Bitmap bitmap = null;
-            try {
-                InputStream str = new URL(urlDisplay).openStream();
-                bitmap = BitmapFactory.decodeStream(str);
-            } catch (IOException e) {
-                e.printStackTrace();
-                Toast.makeText(ImageActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                // StyleableToast.makeText(getApplicationContext(),e.toString(),R.style.example_toast).show();
-            }
-            return bitmap;
-        }
-
-        @Override
-        protected void onPostExecute(Bitmap bitmap) {
-            super.onPostExecute(bitmap);
-            saveImage(waterMarkEffect(bitmap));
-        }
-    }
-
+//    private class DownloadImage extends AsyncTask<String, Void, Bitmap> {
+//
+//        @Override
+//        protected Bitmap doInBackground(String... url) {
+//            String urlDisplay = url[0];
+//            Bitmap bitmap = null;
+//            try {
+//                InputStream str = new URL(urlDisplay).openStream();
+//                bitmap = BitmapFactory.decodeStream(str);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//                Toast.makeText(ImageActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+//                // StyleableToast.makeText(getApplicationContext(),e.toString(),R.style.example_toast).show();
+//            }
+//            return bitmap;
+//        }
+//
+//        @Override
+//        protected void onPostExecute(Bitmap bitmap) {
+//            super.onPostExecute(bitmap);
+//            //saveImage(waterMarkEffect(bitmap));
+//        }
+//    }
 
 }
