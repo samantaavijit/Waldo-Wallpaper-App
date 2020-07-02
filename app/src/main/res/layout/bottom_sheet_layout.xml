@@ -2,13 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/bottom_sheet_"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    app:behavior_hideable="true"
-    app:behavior_peekHeight="150dp"
-    app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+    android:orientation="vertical">
 
     <RelativeLayout
         android:id="@+id/open_bottom_sheet"
@@ -51,10 +47,10 @@
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:layout_marginEnd="25dp"
-            android:tint="@android:color/white"
             android:layout_toStartOf="@+id/set_wallpaper_default"
             android:contentDescription="@string/imageview"
-            android:src="@drawable/ic_download" />
+            android:src="@drawable/ic_download"
+            android:tint="@android:color/white" />
 
         <ImageView
             android:id="@+id/set_wallpaper_default"
@@ -72,7 +68,8 @@
         android:layout_height="match_parent"
         android:layout_marginTop="90dp"
         android:background="@android:color/white"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingBottom="150dp">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -456,7 +453,6 @@
             android:layout_marginTop="10dp"
             android:background="#E3E0E0" />
 
-
         <TextView
             android:id="@+id/tv_title"
             android:layout_width="wrap_content"
@@ -464,7 +460,6 @@
             android:paddingStart="15dp"
             android:paddingTop="5dp"
             android:paddingEnd="15dp" />
-
 
     </LinearLayout>
 

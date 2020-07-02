@@ -2,34 +2,35 @@ package com.avijitsamanta.waldo;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+import androidx.core.widget.NestedScrollView;
 import androidx.palette.graphics.Palette;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 
-import android.content.ContentValues;
+
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 
 
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 
 import android.net.Uri;
-import android.os.AsyncTask;
+
+import android.os.Build;
 import android.os.Bundle;
 
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -47,28 +48,28 @@ import com.avijitsamanta.waldo.Modal.Wallpaper;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.github.chrisbanes.photoview.PhotoView;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
 
 import java.io.File;
-import java.io.FileNotFoundException;
+
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
+
 import java.io.OutputStream;
-import java.net.URL;
 
 
 import static com.avijitsamanta.waldo.WallpaperActivity.PARCELABLE_WALLPAPER;
 
 public class ImageActivity extends AppCompatActivity {
     private Wallpaper w;
-    private ImageView mainImage, imageViewSetWallpaperDefault, imageViewDownloadDefault,
+    private PhotoView mainImage;
+    private ImageView imageViewSetWallpaperDefault, imageViewDownloadDefault,
             imageViewSetWallpaper, imageViewDownload, shareDefault, share;
     private CheckBox checkBox;
     private ProgressBar progressBar;
     private RelativeLayout relativeLayoutDefault;
-
     private Palette.Swatch vibrantSwatch;
     private Palette.Swatch lightVibrantSwatch;
     private Palette.Swatch darkVibrantSwatch;
@@ -79,6 +80,7 @@ public class ImageActivity extends AppCompatActivity {
     private TextView tv_img_name;
 
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,7 +101,7 @@ public class ImageActivity extends AppCompatActivity {
         if (actionBar != null)
             actionBar.hide();
 
-        mainImage = findViewById(R.id.image_view_image_activity);
+        mainImage = findViewById(R.id.photo_view_image_activity);
         checkBox = findViewById(R.id.fav_wallpaper_image_activity);
         progressBar = findViewById(R.id.progress_bar_image_activity);
         relativeLayoutDefault = findViewById(R.id.open_bottom_sheet);
@@ -116,8 +118,8 @@ public class ImageActivity extends AppCompatActivity {
         TextView title = findViewById(R.id.tv_title);
         shareDefault = findViewById(R.id.share_wallpaper_default);
         share = findViewById(R.id.share_wallpaper);
+        View bottomSheet = findViewById(R.id.bottom_sheet);
 
-        LinearLayout linearLayoutBottomSheet = findViewById(R.id.bottom_sheet_);
 
         // Back to the previous activity
         findViewById(R.id.img_back).setOnClickListener(new View.OnClickListener() {
@@ -267,7 +269,6 @@ public class ImageActivity extends AppCompatActivity {
 
                         });
 
-
                 checkBox.setChecked(w.isFavourite);
                 tvResolution.setText(w.getRes());
                 textViewSizeDefault.setText(w.getSize() + " MB");
@@ -279,6 +280,22 @@ public class ImageActivity extends AppCompatActivity {
                 type = name.substring(name.lastIndexOf(".") + 1);
                 tvType.setText(type.toUpperCase());
                 title.setText(w.getTitle());
+
+                BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
+
+                bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+                    @Override
+                    public void onStateChanged(@NonNull View bottomSheet, int newState) {
+
+                    }
+
+                    @Override
+                    public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+                        if (slideOffset > 0.11)
+                            relativeLayoutDefault.setVisibility(View.GONE);
+                        else relativeLayoutDefault.setVisibility(View.VISIBLE);
+                    }
+                });
 
                 // resolution
                 findViewById(R.id.linear_layout_resolution).setOnClickListener(new View.OnClickListener() {
@@ -347,22 +364,6 @@ public class ImageActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
                         checkPermission();
-                    }
-                });
-
-                BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from(linearLayoutBottomSheet);
-                bottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
-                    @Override
-                    public void onStateChanged(@NonNull View bottomSheet, int newState) {
-
-                    }
-
-                    @Override
-                    public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-
-                        if (slideOffset > 0.11)
-                            relativeLayoutDefault.setVisibility(View.GONE);
-                        else relativeLayoutDefault.setVisibility(View.VISIBLE);
                     }
                 });
 

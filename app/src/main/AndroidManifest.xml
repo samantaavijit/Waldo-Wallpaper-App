@@ -19,8 +19,7 @@
         android:theme="@style/AppTheme">
         <activity android:name=".WallpaperActivity" />
         <activity
-            android:name=".ImageActivity"
-            android:theme="@style/Image_FullScreen" />
+            android:name=".ImageActivity" />
         <activity android:name=".SplashScreenActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

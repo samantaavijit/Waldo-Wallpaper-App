@@ -47,4 +47,7 @@ dependencies {
     // Palette for get the color of an Image
     implementation 'androidx.palette:palette:1.0.0'
 
+    // Double tap to zoom (PhotoView)
+    implementation 'com.github.chrisbanes:PhotoView:2.3.0'
+
 }
