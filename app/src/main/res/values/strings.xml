@@ -1,7 +1,13 @@
 <resources>
     <string name="app_name">Waldo</string>
     <string name="logout">Logout</string>
-    <string name="imageview">ImageView</string>
+    <string name="imageView">ImageView</string>
     <string name="color_palette">Color Palette</string>
+    <string name="login">Login</string>
+    <string name="share_waldo">Share Waldo</string>
+    <string name="my_images">My Images</string>
+    <string name="update">Update</string>
+    <string name="about_us">About Us</string>
+    <string name="rate_review"><![CDATA[Rate & Review]]></string>
 
 </resources>

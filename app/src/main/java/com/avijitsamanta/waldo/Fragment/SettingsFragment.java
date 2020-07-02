@@ -1,11 +1,12 @@
 package com.avijitsamanta.waldo.Fragment;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,6 +25,7 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -34,73 +36,83 @@ import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class MeFragment extends Fragment {
+public class SettingsFragment extends Fragment {
     private FirebaseAuth auth;
     private static final int GOOGLE_SIGN_IN_CODE = 101;
     private GoogleSignInClient googleSignInClient;
     private ProgressBar progressBar;
-    private TextView name, email;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         auth = FirebaseAuth.getInstance();
-        return inflater.inflate(R.layout.fragment_me, container, false);
+        return inflater.inflate(R.layout.fragment_settings, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         CircleImageView circleImageView = view.findViewById(R.id.profile_image);
-        SignInButton signInButton = view.findViewById(R.id.sign_in_button);
-        Button logout = view.findViewById(R.id.log_out_button);
+        LinearLayout login = view.findViewById(R.id.login);
+        TextView tVLoginStatus = view.findViewById(R.id.tv_loginStatus);
         progressBar = view.findViewById(R.id.progress_bar_profile);
-        name = view.findViewById(R.id.name);
-        email = view.findViewById(R.id.email);
+        TextView name = view.findViewById(R.id.name);
+        TextView email = view.findViewById(R.id.email);
+
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
         googleSignInClient = GoogleSignIn.getClient(Objects.requireNonNull(getActivity()), gso);
-        if (auth.getCurrentUser() != null) {
-            signInButton.setVisibility(View.GONE);
-            logout.setVisibility(View.VISIBLE);
-            FirebaseUser user = auth.getCurrentUser();
-            if (user == null)
-                return;
-            Glide.with(getActivity())
-                    .load(Objects.requireNonNull(user.getPhotoUrl()).toString())
-                    .into(circleImageView);
-            name.setText(user.getDisplayName());
-            email.setText(user.getEmail());
-            logout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
+
+        login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (auth.getCurrentUser() != null) {
                     progressBar.setVisibility(View.VISIBLE);
                     auth.signOut();
                     googleSignInClient.signOut().addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             progressBar.setVisibility(View.GONE);
-                            Objects.requireNonNull(getActivity()).getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MeFragment())
+                            Objects.requireNonNull(getActivity()).getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new SettingsFragment())
                                     .commit();
                         }
                     });
-
+                    return;
                 }
-            });
+
+                final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(Objects.requireNonNull(getActivity()));
+                bottomSheetDialog.setContentView(R.layout.bottom_sheet_dialog);
+                SignInButton googleSignInButton = bottomSheetDialog.findViewById(R.id.google_sign_in);
+
+                if (googleSignInButton != null)
+                    googleSignInButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            bottomSheetDialog.cancel();
+                            progressBar.setVisibility(View.VISIBLE);
+                            Intent googleSignInIntent = googleSignInClient.getSignInIntent();
+                            startActivityForResult(googleSignInIntent, GOOGLE_SIGN_IN_CODE);
+                        }
+                    });
+
+                bottomSheetDialog.show();
+            }
+        });
+
+        FirebaseUser user = auth.getCurrentUser();
+        if (user != null) {
+            Glide.with(getActivity())
+                    .load(Objects.requireNonNull(user.getPhotoUrl()).toString())
+                    .into(circleImageView);
+            name.setText(user.getDisplayName());
+            email.setText(user.getEmail());
+            tVLoginStatus.setText(getResources().getString(R.string.logout));
         } else {
             name.setVisibility(View.GONE);
             email.setVisibility(View.GONE);
-            signInButton.setVisibility(View.VISIBLE);
-            logout.setVisibility(View.GONE);
-            signInButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    progressBar.setVisibility(View.VISIBLE);
-                    Intent signInIntent = googleSignInClient.getSignInIntent();
-                    startActivityForResult(signInIntent, GOOGLE_SIGN_IN_CODE);
-                }
-            });
+            tVLoginStatus.setText(getResources().getString(R.string.login));
         }
 
         super.onViewCreated(view, savedInstanceState);
@@ -130,7 +142,7 @@ public class MeFragment extends Fragment {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 progressBar.setVisibility(View.GONE);
                 if (task.isSuccessful()) {
-                    Objects.requireNonNull(getActivity()).getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MeFragment())
+                    Objects.requireNonNull(getActivity()).getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new SettingsFragment())
                             .commit();
                 } else {
                     Toast.makeText(getActivity(), "Login failed", Toast.LENGTH_SHORT).show();

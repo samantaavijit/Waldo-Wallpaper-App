@@ -110,7 +110,7 @@ public class WallpaperAdopter extends RecyclerView.Adapter<WallpaperAdopter.Wall
         @Override
         public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
             if (FirebaseAuth.getInstance().getCurrentUser() == null) {
-                Toast.makeText(context, "Please login first.....", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Please login_button_bg first.....", Toast.LENGTH_SHORT).show();
                 compoundButton.setChecked(false);
                 return;
             }

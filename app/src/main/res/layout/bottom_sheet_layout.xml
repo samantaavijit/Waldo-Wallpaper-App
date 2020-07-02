@@ -38,7 +38,7 @@
             android:layout_height="25dp"
             android:layout_marginEnd="25dp"
             android:layout_toStartOf="@+id/download_wallpaper_default"
-            android:contentDescription="@string/imageview"
+            android:contentDescription="@string/imageView"
             android:src="@drawable/ic_share"
             android:tint="@android:color/white" />
 
@@ -48,7 +48,7 @@
             android:layout_height="25dp"
             android:layout_marginEnd="25dp"
             android:layout_toStartOf="@+id/set_wallpaper_default"
-            android:contentDescription="@string/imageview"
+            android:contentDescription="@string/imageView"
             android:src="@drawable/ic_download"
             android:tint="@android:color/white" />
 
@@ -58,7 +58,7 @@
             android:layout_height="25dp"
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="10dp"
-            android:contentDescription="@string/imageview"
+            android:contentDescription="@string/imageView"
             android:src="@drawable/ic_wallpaper" />
 
     </RelativeLayout>
@@ -83,7 +83,7 @@
                 android:layout_height="25dp"
                 android:layout_marginEnd="25dp"
                 android:layout_toStartOf="@+id/download_wallpaper"
-                android:contentDescription="@string/imageview"
+                android:contentDescription="@string/imageView"
                 android:src="@drawable/ic_share" />
 
             <ImageView
@@ -92,7 +92,7 @@
                 android:layout_height="25dp"
                 android:layout_marginEnd="25dp"
                 android:layout_toStartOf="@+id/set_wallpaper"
-                android:contentDescription="@string/imageview"
+                android:contentDescription="@string/imageView"
                 android:src="@drawable/ic_download"
                 android:tint="@color/category_bg" />
 
@@ -102,7 +102,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_marginEnd="10dp"
-                android:contentDescription="@string/imageview"
+                android:contentDescription="@string/imageView"
                 android:src="@drawable/ic_wallpaper"
                 android:tint="@color/category_bg" />
 
