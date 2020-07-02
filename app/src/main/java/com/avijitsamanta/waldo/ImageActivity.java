@@ -420,6 +420,9 @@ public class ImageActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * it open the system wallpaper intent
+     */
     private void setWallpaper() {
         try {
             Bitmap bitmap = downloadImage();
